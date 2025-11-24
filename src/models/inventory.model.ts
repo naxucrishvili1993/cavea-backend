@@ -2,7 +2,7 @@ import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/database";
 import { Location } from "./location.model";
 
-export class Product extends Model {
+export class Inventory extends Model {
 	declare id: number;
 	declare name: string;
 	declare description: string;
@@ -14,7 +14,7 @@ export class Product extends Model {
 	declare location?: Location;
 }
 
-Product.init(
+Inventory.init(
 	{
 		id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
 		name: { type: DataTypes.STRING, allowNull: false, unique: true },
@@ -41,10 +41,10 @@ Product.init(
 	},
 	{
 		sequelize,
-		modelName: "Product",
-		tableName: "products",
+		modelName: "Inventory",
+		tableName: "inventories",
 	}
 );
 
-Product.belongsTo(Location, { foreignKey: "locationId", as: "location" });
-Location.hasMany(Product, { foreignKey: "locationId", as: "products" });
+Inventory.belongsTo(Location, { foreignKey: "locationId", as: "location" });
+Location.hasMany(Inventory, { foreignKey: "locationId", as: "inventories" });

@@ -25,7 +25,7 @@ export async function createLocation({ address }: { address: string }) {
 
 export async function findLocationById(id: number) {
 	try {
-		const location = await Location.findByPk(id, { include: ["products"] });
+		const location = await Location.findByPk(id, { include: ["inventories"] });
 		return location;
 	} catch (e) {
 		logger.error("Error fetching location by ID", e);
@@ -35,7 +35,7 @@ export async function findLocationById(id: number) {
 
 export async function findAllLocations() {
 	try {
-		const locations = await Location.findAll({ include: ["products"] });
+		const locations = await Location.findAll({ include: ["inventories"] });
 		return locations;
 	} catch (e) {
 		logger.error("Error fetching all locations", e);

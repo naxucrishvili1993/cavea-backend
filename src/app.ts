@@ -1,12 +1,13 @@
 import express from "express";
 import cors from "cors";
 import swaggerUi from "swagger-ui-express";
-import { locationRoutes, productRoutes } from "./routes";
+import { inventoryRoutes, locationRoutes } from "./routes";
 import { connectDB } from "./config/database";
 import { swaggerSpec } from "./config/swagger";
 import "./models/location.model";
-import "./models/product.model";
+import "./models/inventory.model";
 import { sequelize } from "./config/database";
+import { bulkCreateInventories } from "./controllers/inventory.controller";
 
 const app = express();
 
@@ -28,7 +29,7 @@ app.get("/api", (_, res) => {
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.use("/products", productRoutes.default);
+app.use("/inventories", inventoryRoutes.default);
 app.use("/locations", locationRoutes.default);
 
 app.use((req, res) => {
@@ -40,5 +41,9 @@ connectDB();
 sequelize.sync({ alter: true }).then(() => {
 	console.log("✅ Tables synchronized");
 });
+
+if (process.env.BULK_CREATE_INVENTORIES === "true") {
+	bulkCreateInventories();
+}
 
 export default app;

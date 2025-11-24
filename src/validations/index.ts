@@ -1,2 +1,2 @@
 export * from "./location.validation";
-export * from "./product.validation";
+export * from "./inventory.validation";

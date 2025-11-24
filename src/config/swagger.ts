@@ -6,7 +6,7 @@ const options: swaggerJsdoc.Options = {
 		info: {
 			title: "Cavea Backend API",
 			version: "1.0.0",
-			description: "REST API for managing products and locations",
+			description: "REST API for managing inventories and locations",
 		},
 		servers: [
 			{

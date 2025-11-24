@@ -1,27 +1,27 @@
 import {
-	createProduct,
-	deleteProduct,
-	getAllProducts,
-	getProductById,
-	getProductsByLocationId,
-	updateProduct,
-} from "../controllers/product.controller";
+	createInventory,
+	deleteInventory,
+	getAllInventories,
+	getInventoriesByLocationId,
+	getInventoryById,
+	updateInventory,
+} from "../controllers/inventory.controller";
 import express from "express";
 
 export const router = express.Router();
 
 /**
  * @swagger
- * /products:
+ * /inventories:
  *   get:
- *     summary: Get all products
- *     tags: [Products]
+ *     summary: Get all inventories
+ *     tags: [Inventories]
  *     responses:
  *       200:
- *         description: List of all products
+ *         description: List of all inventories
  *   post:
- *     summary: Create a new product
- *     tags: [Products]
+ *     summary: Create a new inventory
+ *     tags: [Inventories]
  *     requestBody:
  *       required: true
  *       content:
@@ -39,16 +39,16 @@ export const router = express.Router();
  *                 type: integer
  *     responses:
  *       201:
- *         description: Product created successfully
+ *         description: Inventory created successfully
  */
-router.route("/").get(getAllProducts).post(createProduct);
+router.route("/").get(getAllInventories).post(createInventory);
 
 /**
  * @swagger
- * /products/{id}:
+ * /inventories/{id}:
  *   get:
- *     summary: Get a product by ID
- *     tags: [Products]
+ *     summary: Get an inventory by ID
+ *     tags: [Inventories]
  *     parameters:
  *       - in: path
  *         name: id
@@ -57,12 +57,12 @@ router.route("/").get(getAllProducts).post(createProduct);
  *           type: integer
  *     responses:
  *       200:
- *         description: Product details
+ *         description: Inventory details
  *       404:
- *         description: Product not found
+ *         description: Inventory not found
  *   patch:
- *     summary: Update a product
- *     tags: [Products]
+ *     summary: Update a inventory
+ *     tags: [Inventories]
  *     parameters:
  *       - in: path
  *         name: id
@@ -86,10 +86,10 @@ router.route("/").get(getAllProducts).post(createProduct);
  *                 type: integer
  *     responses:
  *       200:
- *         description: Product updated successfully
+ *         description: Inventory updated successfully
  *   delete:
- *     summary: Delete a product
- *     tags: [Products]
+ *     summary: Delete an inventory
+ *     tags: [Inventories]
  *     parameters:
  *       - in: path
  *         name: id
@@ -98,20 +98,20 @@ router.route("/").get(getAllProducts).post(createProduct);
  *           type: integer
  *     responses:
  *       200:
- *         description: Product deleted successfully
+ *         description: Inventory deleted successfully
  */
 router
 	.route("/:id")
-	.get(getProductById)
-	.patch(updateProduct)
-	.delete(deleteProduct);
+	.get(getInventoryById)
+	.patch(updateInventory)
+	.delete(deleteInventory);
 
 /**
  * @swagger
- * /products/location/{locationId}:
+ * /inventories/location/{locationId}:
  *   get:
- *     summary: Get products by location ID
- *     tags: [Products]
+ *     summary: Get inventories by location ID
+ *     tags: [Inventories]
  *     parameters:
  *       - in: path
  *         name: locationId
@@ -120,8 +120,8 @@ router
  *           type: integer
  *     responses:
  *       200:
- *         description: List of products for the location
+ *         description: List of inventories for the location
  */
-router.get("/location/:locationId", getProductsByLocationId);
+router.get("/location/:locationId", getInventoriesByLocationId);
 
 export default router;
