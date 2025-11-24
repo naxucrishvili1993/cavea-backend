@@ -2,6 +2,7 @@ import {
 	createInventory,
 	deleteInventory,
 	getAllInventories,
+	getInventoriesByLocation,
 	getInventoryById,
 	updateInventory,
 } from "../controllers/inventory.controller";
@@ -15,9 +16,35 @@ export const router = express.Router();
  *   get:
  *     summary: Get all inventories
  *     tags: [Inventories]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: locationId
+ *         schema:
+ *           type: integer
+ *         description: Filter by location ID
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [name, description, location]
+ *           default: name
+ *         description: Field to sort by
+ *       - in: query
+ *         name: order
+ *         schema:
+ *           type: string
+ *           enum: [ASC, DESC]
+ *           default: ASC
+ *         description: Sort order
  *     responses:
  *       200:
- *         description: List of all inventories
+ *         description: List of all inventories with pagination
  *   post:
  *     summary: Create a new inventory
  *     tags: [Inventories]
@@ -41,6 +68,18 @@ export const router = express.Router();
  *         description: Inventory created successfully
  */
 router.route("/").get(getAllInventories).post(createInventory);
+
+/**
+ * @swagger
+ * /inventories/by-location:
+ *   get:
+ *     summary: Get inventory count grouped by location
+ *     tags: [Inventories]
+ *     responses:
+ *       200:
+ *         description: List of locations with inventory counts and total prices
+ */
+router.get("/by-location", getInventoriesByLocation);
 
 /**
  * @swagger

@@ -1,6 +1,7 @@
-import { ValidationError } from "sequelize";
+import { col, fn, ValidationError } from "sequelize";
 import logger from "../config/logger";
 import { Inventory } from "../models/inventory.model";
+import { Location } from "../models/location.model";
 
 type InventoryFilters = {
 	page?: number;
@@ -69,7 +70,10 @@ export async function findAllInventories({
 			include: ["location"],
 			offset: (page - 1) * limit,
 			limit,
-			order: [[sortBy, order]],
+			order:
+				sortBy === "location"
+					? [["location", "address", order]]
+					: [[sortBy, order]],
 		});
 		return { inventories: rows, total: count };
 	} catch (e) {
@@ -112,5 +116,32 @@ export async function deleteInventory(id: number) {
 	} catch (e) {
 		logger.error("Error deleting inventory", e);
 		throw new Error("Could not delete inventory");
+	}
+}
+
+export async function getInventoriesByLocation() {
+	try {
+		const results = await Location.findAll({
+			attributes: [
+				"id",
+				"address",
+				[fn("COUNT", col("inventories.id")), "inventoryCount"],
+				[fn("SUM", col("inventories.price")), "totalPrice"],
+			],
+			include: [
+				{
+					model: Inventory,
+					as: "inventories",
+					attributes: [],
+				},
+			],
+			group: ["Location.id"],
+			raw: true,
+		});
+
+		return results;
+	} catch (e) {
+		logger.error("Error fetching inventories by location", e);
+		throw new Error("Could not fetch inventories by location");
 	}
 }

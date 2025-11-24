@@ -4,6 +4,7 @@ import {
 	createInventory as createInventoryService,
 	updateInventory as updateInventoryService,
 	deleteInventory as deleteInventoryService,
+	getInventoriesByLocation as getInventoriesByLocationService,
 	findAllInventories,
 	findInventoryById,
 } from "../services/inventory.service";
@@ -186,5 +187,21 @@ export async function bulkCreateInventories() {
 		console.log(`✅ Successfully inserted ${NUM_OF_PRODUCTS} inventory rows.`);
 	} catch (err: any) {
 		console.error("❌ Failed:", err.message);
+	}
+}
+
+export async function getInventoriesByLocation(req: Request, res: Response) {
+	try {
+		const inventoriesByLocation = await getInventoriesByLocationService();
+
+		res.status(200).json({
+			message: "Inventories retrieved successfully",
+			inventoriesByLocation,
+		});
+	} catch (e) {
+		logger.error("Error in getInventoriesByLocation controller", e);
+		res
+			.status(500)
+			.json({ message: "Could not retrieve inventories by location" });
 	}
 }
