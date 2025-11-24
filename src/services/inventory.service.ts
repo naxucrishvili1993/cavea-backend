@@ -2,6 +2,14 @@ import { ValidationError } from "sequelize";
 import logger from "../config/logger";
 import { Inventory } from "../models/inventory.model";
 
+type InventoryFilters = {
+	page?: number;
+	limit?: number;
+	sortBy?: "name" | "description" | "location";
+	order?: "ASC" | "DESC";
+	locationId?: number;
+};
+
 export async function createInventory({
 	name,
 	locationId,
@@ -51,14 +59,19 @@ export async function findInventoryById(id: number) {
 export async function findAllInventories({
 	page = 1,
 	limit = 20,
-}: { page?: number; limit?: number } = {}) {
+	sortBy = "name",
+	order = "ASC",
+	locationId = undefined,
+}: InventoryFilters) {
 	try {
-		const inventories = await Inventory.findAll({
+		const { rows, count } = await Inventory.findAndCountAll({
+			where: locationId ? { locationId } : undefined,
 			include: ["location"],
 			offset: (page - 1) * limit,
 			limit,
+			order: [[sortBy, order]],
 		});
-		return inventories;
+		return { inventories: rows, total: count };
 	} catch (e) {
 		logger.error("Error fetching all inventories", e);
 		throw new Error("Could not fetch inventories");
@@ -99,23 +112,5 @@ export async function deleteInventory(id: number) {
 	} catch (e) {
 		logger.error("Error deleting inventory", e);
 		throw new Error("Could not delete inventory");
-	}
-}
-
-export async function findInventoriesByLocation(
-	locationId: number,
-	{ page = 1, limit = 20 }: { page?: number; limit?: number }
-) {
-	try {
-		const inventories = await Inventory.findAll({
-			where: { locationId },
-			include: ["location"],
-			offset: (page - 1) * limit,
-			limit,
-		});
-		return inventories;
-	} catch (e) {
-		logger.error("Error fetching inventories by location", e);
-		throw new Error("Could not fetch inventories by location");
 	}
 }

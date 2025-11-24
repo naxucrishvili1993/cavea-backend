@@ -5,13 +5,11 @@ import {
 	updateInventory as updateInventoryService,
 	deleteInventory as deleteInventoryService,
 	findAllInventories,
-	findInventoriesByLocation,
 	findInventoryById,
 } from "../services/inventory.service";
 import { formatValidationError } from "../utils/format";
 import { createInventorySchema, updateInventorySchema } from "../validations";
 import { Inventory } from "../models/inventory.model";
-import { sequelize } from "../config/database";
 
 export async function createInventory(req: Request, res: Response) {
 	try {
@@ -53,18 +51,24 @@ export async function createInventory(req: Request, res: Response) {
 
 export async function getAllInventories(req: Request, res: Response) {
 	try {
-		const { page } = req.query;
-		const inventories = await findAllInventories({ page: Number(page) || 1 });
+		const { page, locationId, sortBy = "name", order = "ASC" } = req.query;
+		const inventories = await findAllInventories({
+			page: Number(page) || 1,
+			locationId: locationId ? Number(locationId) : undefined,
+			sortBy: sortBy as "name" | "description" | "location",
+			order: order as "ASC" | "DESC",
+		});
 		res.status(200).json({
 			message: "Inventories retrieved successfully",
-			inventories: inventories.map((p) => ({
+			inventories: inventories.inventories.map((p) => ({
 				id: p.id,
 				name: p.name,
 				description: p.description,
 				price: p.price,
-				// Location address
 				location: p.location ? p.location.address : null,
+				locationId: p.locationId,
 			})),
+			total: inventories.total,
 		});
 	} catch (e) {
 		logger.error("Error in getAllInventories controller", e);
@@ -96,34 +100,6 @@ export async function getInventoryById(req: Request, res: Response) {
 	} catch (e) {
 		logger.error("Error in getInventoryById controller", e);
 		res.status(500).json({ message: "Could not retrieve inventory" });
-	}
-}
-
-export async function getInventoriesByLocationId(req: Request, res: Response) {
-	try {
-		const { locationId } = req.params;
-		const { page } = req.query;
-
-		if (!locationId) {
-			return res.status(400).json({ message: "Location ID is required" });
-		}
-
-		const inventories = await findInventoriesByLocation(Number(locationId), {
-			page: Number(page) || 1,
-		});
-
-		res.status(200).json({
-			message: "Inventories retrieved successfully",
-			inventories: inventories.map((i) => ({
-				id: i.id,
-				name: i.name,
-				description: i.description,
-				price: i.price,
-			})),
-		});
-	} catch (e) {
-		logger.error("Error in getInventoriesByLocationId controller", e);
-		res.status(500).json({ message: "Could not retrieve inventories" });
 	}
 }
 

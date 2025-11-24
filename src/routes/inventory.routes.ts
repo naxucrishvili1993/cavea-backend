@@ -2,7 +2,6 @@ import {
 	createInventory,
 	deleteInventory,
 	getAllInventories,
-	getInventoriesByLocationId,
 	getInventoryById,
 	updateInventory,
 } from "../controllers/inventory.controller";
@@ -105,23 +104,5 @@ router
 	.get(getInventoryById)
 	.patch(updateInventory)
 	.delete(deleteInventory);
-
-/**
- * @swagger
- * /inventories/location/{locationId}:
- *   get:
- *     summary: Get inventories by location ID
- *     tags: [Inventories]
- *     parameters:
- *       - in: path
- *         name: locationId
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: List of inventories for the location
- */
-router.get("/location/:locationId", getInventoriesByLocationId);
 
 export default router;
