@@ -10,7 +10,6 @@ export class Inventory extends Model {
 	declare locationId: number;
 	declare createdAt: Date;
 	declare updatedAt: Date;
-	// Association
 	declare location?: Location;
 }
 

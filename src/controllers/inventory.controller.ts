@@ -11,6 +11,7 @@ import {
 import { formatValidationError } from "../utils/format";
 import { createInventorySchema, updateInventorySchema } from "../validations";
 import { Inventory } from "../models/inventory.model";
+import { Location } from "../models/location.model";
 
 export async function createInventory(req: Request, res: Response) {
 	try {
@@ -162,11 +163,41 @@ export async function deleteInventory(req: Request, res: Response) {
 	}
 }
 
+export async function getInventoriesByLocation(req: Request, res: Response) {
+	try {
+		const inventoriesByLocation = await getInventoriesByLocationService();
+
+		res.status(200).json({
+			message: "Inventories retrieved successfully",
+			inventoriesByLocation,
+		});
+	} catch (e) {
+		logger.error("Error in getInventoriesByLocation controller", e);
+		res
+			.status(500)
+			.json({ message: "Could not retrieve inventories by location" });
+	}
+}
+
 export async function bulkCreateInventories() {
 	try {
-		const rows = [];
-		const locationIds = [2, 3, 4, 5, 6];
+		const locationNames = [
+			"მთავარი ოფისი",
+			"კავეა ისთ ფოინთი",
+			"კავეა თბილისი მოლი",
+			"კავეა გალერია",
+			"კავეა სითი მოლი",
+		];
 
+		const locations = await Promise.all(
+			locationNames.map((address) =>
+				Location.findOrCreate({ where: { address }, defaults: { address } })
+			)
+		);
+
+		const locationIds = locations.map(([loc]) => loc.id);
+
+		const rows = [];
 		const NUM_OF_PRODUCTS = 50_000;
 
 		for (let i = 1; i <= NUM_OF_PRODUCTS; i++) {
@@ -187,21 +218,5 @@ export async function bulkCreateInventories() {
 		console.log(`✅ Successfully inserted ${NUM_OF_PRODUCTS} inventory rows.`);
 	} catch (err: any) {
 		console.error("❌ Failed:", err.message);
-	}
-}
-
-export async function getInventoriesByLocation(req: Request, res: Response) {
-	try {
-		const inventoriesByLocation = await getInventoriesByLocationService();
-
-		res.status(200).json({
-			message: "Inventories retrieved successfully",
-			inventoriesByLocation,
-		});
-	} catch (e) {
-		logger.error("Error in getInventoriesByLocation controller", e);
-		res
-			.status(500)
-			.json({ message: "Could not retrieve inventories by location" });
 	}
 }
