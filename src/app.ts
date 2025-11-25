@@ -11,6 +11,14 @@ import { bulkCreateInventories } from "./controllers/inventory.controller";
 
 const app = express();
 
+sequelize.sync({ alter: true }).then(() => {
+	console.log("✅ Tables synchronized");
+	connectDB();
+	if (process.env.BULK_CREATE_INVENTORIES === "true") {
+		bulkCreateInventories();
+	}
+});
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -35,15 +43,5 @@ app.use("/locations", locationRoutes.default);
 app.use((req, res) => {
 	res.status(404).json({ message: "Route not found" });
 });
-
-connectDB();
-
-sequelize.sync({ alter: true }).then(() => {
-	console.log("✅ Tables synchronized");
-});
-
-if (process.env.BULK_CREATE_INVENTORIES === "true") {
-	bulkCreateInventories();
-}
 
 export default app;
