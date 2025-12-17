@@ -139,6 +139,13 @@ export async function getInventoriesByLocation() {
 			raw: true,
 		});
 
+		/**
+		 * SELECT id, address, COUNT(inventories.id) AS inventoryCount, SUM (inventories.price) as totalPrice
+		 * FROM Locations
+		 * LEFT JOIN inventories ON inventories.locationId = Locations.id
+		 * GROUP BY Locations.id;
+		 */
+
 		return results;
 	} catch (e) {
 		logger.error("Error fetching inventories by location", e);

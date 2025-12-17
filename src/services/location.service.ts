@@ -35,7 +35,7 @@ export async function findLocationById(id: number) {
 
 export async function findAllLocations() {
 	try {
-		const locations = await Location.findAll({ include: ["inventories"] });
+		const locations = await Location.findAll();
 		return locations;
 	} catch (e) {
 		logger.error("Error fetching all locations", e);
